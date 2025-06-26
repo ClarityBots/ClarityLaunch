@@ -1,3 +1,4 @@
+/* style.css */
 body {
   font-family: 'Inter', sans-serif;
   margin: 0;
@@ -63,4 +64,16 @@ pre {
   padding: 1rem;
   border-radius: 1rem;
   white-space: pre-wrap;
+  margin-top: 1rem;
+}
+
+#suggestions {
+  margin-top: 1rem;
+  padding-left: 1.25rem;
+  list-style-type: disc;
+  color: #333;
+}
+
+#suggestions li {
+  margin-bottom: 0.5rem;
 }
