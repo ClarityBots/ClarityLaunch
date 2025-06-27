@@ -1,86 +1,175 @@
-/* style.css */
+/* Reset & base styles */
 body {
-  font-family: 'Inter', sans-serif;
-  background: #f4f4f8;
   margin: 0;
   padding: 0;
+  font-family: 'Inter', sans-serif;
+  background-color: #f9fafb;
+  color: #111827;
 }
 
-.app-container {
-  max-width: 800px;
-  margin: 40px auto;
-  padding: 20px;
-  background: #fff;
+/* Container layout */
+.container {
+  max-width: 700px;
+  margin: 3rem auto;
+  padding: 2rem;
+  background: #ffffff;
   border-radius: 12px;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
 }
 
+/* Headings */
 h1 {
-  text-align: center;
-  margin-bottom: 20px;
-}
-
-.conversation-box {
-  min-height: 300px;
-  padding: 1rem;
-  background: #f9f9fc;
-  border-radius: 10px;
-  overflow-y: auto;
+  font-size: 2rem;
+  color: #1e293b;
   margin-bottom: 1rem;
-  border: 1px solid #ccc;
 }
 
-.conversation-box .bot, .conversation-box .user {
-  margin: 0.5rem 0;
-  padding: 0.75rem;
-  border-radius: 8px;
-  max-width: 80%;
+h2 {
+  font-size: 1.5rem;
+  color: #1e293b;
+  margin-top: 2.5rem;
+  margin-bottom: 1rem;
 }
 
-.conversation-box .bot {
-  background: #e0ebff;
-  align-self: flex-start;
-}
-
-.conversation-box .user {
-  background: #d1ffd8;
-  align-self: flex-end;
-  margin-left: auto;
-}
-
-.input-area {
-  display: flex;
-  flex-direction: column;
+/* Form labels and inputs */
+label {
+  display: block;
+  font-weight: 600;
+  margin-top: 1.25rem;
+  margin-bottom: 0.5rem;
 }
 
 textarea {
-  font-size: 1rem;
-  padding: 0.75rem;
-  border: 1px solid #ccc;
-  border-radius: 10px;
-  resize: vertical;
+  width: 100%;
   min-height: 100px;
-  margin-bottom: 1rem;
+  padding: 0.75rem;
+  font-size: 1rem;
+  border-radius: 0.75rem;
+  border: 1px solid #cbd5e1;
+  resize: vertical;
 }
 
+/* Buttons */
 button {
-  padding: 0.6rem 1rem;
-  background: #007BFF;
-  color: white;
+  margin-top: 1.5rem;
+  padding: 0.75rem 1.25rem;
+  font-size: 1rem;
+  background-color: #2563eb;
+  color: #ffffff;
   border: none;
-  font-weight: bold;
-  border-radius: 8px;
+  border-radius: 0.5rem;
   cursor: pointer;
+  font-weight: 600;
+  transition: background-color 0.2s ease;
 }
 
 button:hover {
-  background: #0056b3;
+  background-color: #1d4ed8;
 }
 
-.summary-container {
+/* SMART Rock response styling */
+#response-box {
+  background-color: #f8fafc;
+  border-radius: 12px;
+  padding: 1.5rem;
+  margin-top: 1rem;
+  font-size: 1rem;
+  line-height: 1.6;
+  color: #111827;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+  white-space: pre-wrap;
+}
+
+#response-box strong {
+  color: #0f172a;
+  display: block;
+  margin-top: 1rem;
+  font-weight: 600;
+}
+
+/* Suggestions Panel */
+#suggestions-box {
+  background-color: #fff7ed;
+  border: 1px solid #fed7aa;
+  border-radius: 12px;
+  padding: 1rem 1.5rem;
   margin-top: 2rem;
-  padding: 1rem;
-  background: #e8f5e9;
-  border-radius: 10px;
-  border: 1px solid #b2dfdb;
+  box-shadow: 0 1px 5px rgba(0, 0, 0, 0.04);
+}
+
+#suggestions-box h3 {
+  margin-bottom: 0.5rem;
+  font-size: 1.1rem;
+  color: #b45309;
+}
+
+#suggestion-list li {
+  margin-bottom: 0.5rem;
+  padding-left: 1rem;
+  position: relative;
+}
+
+#suggestion-list li::before {
+  content: "•";
+  position: absolute;
+  left: 0;
+  color: #fb923c;
+  font-size: 1.2rem;
+  line-height: 1;
+}
+
+/* Mode toggle */
+.mode-toggle-wrapper {
+  display: flex;
+  align-items: center;
+  margin-top: 3rem;
+  gap: 1rem;
+  font-size: 1rem;
+  color: #334155;
+}
+
+/* Toggle switch */
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 52px;
+  height: 28px;
+}
+
+.switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #cbd5e1;
+  transition: 0.3s;
+  border-radius: 34px;
+}
+
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 22px;
+  width: 22px;
+  left: 4px;
+  bottom: 3px;
+  background-color: white;
+  transition: 0.3s;
+  border-radius: 50%;
+}
+
+input:checked + .slider {
+  background-color: #2563eb;
+}
+
+input:checked + .slider:before {
+  transform: translateX(24px);
 }

@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SMART Rock Builder – Guided Mode</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+</head>
+<body>
+  <div class="container">
+    <h1>SMART Rock Builder – Guided Mode</h1>
+
+    <form id="guided-form">
+      <label for="specific"><strong>1. Specific:</strong> What exactly do you want to accomplish?</label>
+      <textarea id="specific" name="specific" required></textarea>
+
+      <label for="measurable"><strong>2. Measurable:</strong> How will you track success?</label>
+      <textarea id="measurable" name="measurable" required></textarea>
+
+      <label for="achievable"><strong>3. Achievable:</strong> Why is this realistic and doable?</label>
+      <textarea id="achievable" name="achievable" required></textarea>
+
+      <label for="relevant"><strong>4. Relevant:</strong> Why does this matter to your business/life?</label>
+      <textarea id="relevant" name="relevant" required></textarea>
+
+      <label for="timebound"><strong>5. Time-bound:</strong> What is your deadline?</label>
+      <textarea id="timebound" name="timebound" required></textarea>
+
+      <button type="submit">Generate SMART Rock</button>
+    </form>
+
+    <h2>Your SMART Rock</h2>
+    <div id="response-box" class="formatted-response"></div>
+
+    <!-- Suggestions Panel -->
+    <div id="suggestions-box" class="suggestions" style="display: none">
+      <h3><strong>💡 AI Suggestions</strong></h3>
+      <ul id="suggestion-list"></ul>
+    </div>
+
+    <button id="reset-btn">Start Over</button>
+
+    <!-- Mode toggle below everything -->
+    <div class="mode-toggle-wrapper">
+      <label class="switch">
+        <input type="checkbox" id="mode-toggle" />
+        <span class="slider"></span>
+      </label>
+      <span id="mode-label">Classic | Guided</span>
+    </div>
+  </div>
+
+  <script>
+    const form = document.getElementById('guided-form');
+    const responseBox = document.getElementById('response-box');
+    const resetBtn = document.getElementById('reset-btn');
+    const toggle = document.getElementById('mode-toggle');
+    const suggestionsBox = document.getElementById('suggestions-box');
+    const suggestionList = document.getElementById('suggestion-list');
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      const prompt = `
+You are an expert EOS® facilitator and AI coach. Refine the user's SMART Rock using the following inputs:
+
+1. Specific: ${form.specific.value}
+2. Measurable: ${form.measurable.value}
+3. Achievable: ${form.achievable.value}
+4. Relevant: ${form.relevant.value}
+5. Time-bound: ${form.timebound.value}
+
+Respond in this format:
+
+1. **Specific:** ...
+2. **Measurable:** ...
+3. **Achievable:** ...
+4. **Relevant:** ...
+5. **Time-bound:** ...
+
+Then write a short summary paragraph version of the SMART Rock at the end.
+
+Also list 3 suggestions to improve or sharpen the SMART Rock. Format them as a bulleted list.`;
+
+      try {
+        const res = await axios.post('/.netlify/functions/coach_smart_rocks', { prompt });
+        const raw = res.data.message;
+        const parts = raw.split("\n\n•");
+
+        responseBox.innerHTML = `<div style="white-space: pre-wrap;"><strong>${parts[0].replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')}</strong></div>`;
+
+        if (parts.length > 1) {
+          suggestionsBox.style.display = 'block';
+          const bullets = parts.slice(1).map(item => item.replace(/^•\s*/, '').trim());
+          suggestionList.innerHTML = bullets.map(s => `<li>${s}</li>`).join('');
+        } else {
+          suggestionsBox.style.display = 'none';
+        }
+      } catch (err) {
+        responseBox.innerText = 'Error generating SMART Rock.';
+        suggestionsBox.style.display = 'none';
+      }
+    });
+
+    resetBtn.addEventListener('click', () => {
+      form.reset();
+      responseBox.innerHTML = '';
+      suggestionsBox.style.display = 'none';
+    });
+
+    toggle.addEventListener('change', () => {
+      window.location.href = 'index.html';
+    });
+  </script>
+</body>
+</html>

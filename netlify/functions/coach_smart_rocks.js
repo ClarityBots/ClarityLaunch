@@ -1,75 +1,56 @@
-// netlify/functions/coach_smart_rocks.js
+// coach_smart_rocks.js
 
 const { OpenAI } = require("openai");
 
 const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
+  apiKey: process.env.OPENAI_API_KEY, // from Netlify environment
 });
 
-exports.handler = async function (event) {
+exports.handler = async (event) => {
   try {
-    const body = JSON.parse(event.body || "{}");
+    const body = JSON.parse(event.body);
     const userPrompt = body.prompt || "Help me define a SMART goal.";
-    const step = body.step || "Specific";
-    const smartData = body.smartData || {};
 
-    // 🎯 Handle final summary generation
-    if (step === "summary") {
-      const summaryPrompt = `
-You are an expert EOS® facilitator. A user has defined a SMART goal with the following:
+    const systemPrompt = `
+You are an expert EOS® facilitator and AI coach. Take the user's goal and refine it using the SMART framework:
+- Specific
+- Measurable
+- Achievable
+- Relevant
+- Time-bound
 
-Specific: ${smartData.specific}
-Measurable: ${smartData.measurable}
-Achievable: ${smartData.achievable}
-Relevant: ${smartData.relevant}
-Time-bound: ${smartData["time-bound"]}
+Respond in this format:
 
-Create a concise SMART Rock summary they can copy into a tool like Ninety.io. Keep it one paragraph and easy to understand.
-`;
+1. **Specific:** ...
+2. **Measurable:** ...
+3. **Achievable:** ...
+4. **Relevant:** ...
+5. **Time-bound:** ...
 
-      const response = await openai.chat.completions.create({
-        model: "gpt-4",
-        messages: [{ role: "system", content: summaryPrompt }],
-      });
+Then write a short summary paragraph version of the SMART Rock at the end.
 
-      return {
-        statusCode: 200,
-        body: JSON.stringify({
-          summary: response.choices[0].message.content.trim(),
-        }),
-      };
-    }
+Also list 3 suggestions to improve or sharpen the SMART Rock. Format them as a bulleted list.
+    `;
 
-    // 🧠 Generate 2–3 options for a specific SMART step
-    const suggestionPrompt = `
-You are an EOS® implementer helping a user refine their goal using the SMART method. The current step is **${step}**.
-
-Original goal: ${userPrompt}
-
-Suggest 2–3 excellent **${step}** options that would help this goal become more SMART. Only return the list of suggestions without explanation.
-`;
-
-    const aiResponse = await openai.chat.completions.create({
-      model: "gpt-4",
+    const chatCompletion = await openai.chat.completions.create({
+      model: "gpt-4o",
       messages: [
-        { role: "system", content: suggestionPrompt }
+        { role: "system", content: systemPrompt },
+        { role: "user", content: userPrompt },
       ],
     });
 
-    const raw = aiResponse.choices[0].message.content.trim();
-    const suggestions = raw
-      .split(/\n+/)
-      .map(s => s.replace(/^\d+[\.\)]?\s*/, "").trim())
-      .filter(s => s.length > 0);
+    const result = chatCompletion.choices?.[0]?.message?.content || "No response generated.";
 
     return {
       statusCode: 200,
-      body: JSON.stringify({ suggestions }),
+      body: JSON.stringify({ message: result }),
     };
-  } catch (err) {
+  } catch (error) {
+    console.error("End – Error:", error);
     return {
       statusCode: 500,
-      body: JSON.stringify({ error: err.message || "Unknown error" }),
+      body: JSON.stringify({ error: error.message }),
     };
   }
 };

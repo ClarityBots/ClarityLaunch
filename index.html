@@ -1,30 +1,105 @@
-<!-- index.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>SMART Rock Builder</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="style.css" />
+  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 </head>
 <body>
-  <div class="app-container">
+  <div class="container">
     <h1>SMART Rock Builder</h1>
-    
-    <div id="conversation" class="conversation-box"></div>
 
-    <div class="input-area">
-      <textarea id="userInput" placeholder="Type your response..."></textarea>
-      <button id="submitBtn">Submit</button>
+    <label for="goal">Enter your Rock or Goal</label>
+    <textarea id="goal" placeholder="Improve customer service."></textarea>
+    <button id="submit-btn">Refine with SMART</button>
+
+    <h2>Your SMART Rock</h2>
+    <div id="response-box" class="output-box"></div>
+
+    <div id="suggestions-box" class="suggestions" style="display: none;">
+      <h3>💡 AI Suggestions</h3>
+      <ul id="suggestion-list"></ul>
     </div>
 
-    <div class="summary-container" id="summaryContainer" style="display: none;">
-      <h2>Final SMART Rock</h2>
-      <p id="summaryText"></p>
-      <button id="copySummaryBtn">Copy to Clipboard</button>
+    <button id="reset-btn">Start Over</button>
+
+    <div class="mode-toggle-wrapper">
+      <label class="switch">
+        <input type="checkbox" id="mode-toggle" />
+        <span class="slider"></span>
+      </label>
+      <span id="mode-label">Classic | Guided</span>
     </div>
   </div>
 
-  <script src="smart_journey.js"></script>
+  <script>
+    const submitBtn = document.getElementById("submit-btn");
+    const goalInput = document.getElementById("goal");
+    const responseBox = document.getElementById("response-box");
+    const resetBtn = document.getElementById("reset-btn");
+    const suggestionsBox = document.getElementById("suggestions-box");
+    const suggestionList = document.getElementById("suggestion-list");
+    const toggle = document.getElementById("mode-toggle");
+
+    submitBtn.addEventListener("click", async () => {
+      const userInput = goalInput.value.trim();
+      if (!userInput) return;
+
+      const prompt = `
+You are an expert EOS® facilitator and AI coach. Take the user's goal and refine it using the SMART framework:
+- **S**pecific
+- **M**easurable
+- **A**chievable
+- **R**elevant
+- **T**ime-bound
+
+Goal: ${userInput}
+
+Respond in this format:
+
+1. **Specific:** ...
+2. **Measurable:** ...
+3. **Achievable:** ...
+4. **Relevant:** ...
+5. **Time-bound:** ...
+
+Then write a short summary paragraph version of the SMART Rock at the end.
+
+Also list 3 suggestions to improve or sharpen the SMART Rock. Format them as a bulleted list.`;
+
+      try {
+        const res = await axios.post('/.netlify/functions/coach_smart_rocks', { prompt });
+        const raw = res.data.message;
+        const parts = raw.split("\n\n•");
+
+        responseBox.innerText = parts[0];
+
+        if (parts.length > 1) {
+          suggestionsBox.style.display = 'block';
+          const bullets = parts.slice(1).map(p => p.replace(/^•\s*/, '').trim());
+          suggestionList.innerHTML = bullets.map(s => `<li>${s}</li>`).join('');
+        } else {
+          suggestionsBox.style.display = 'none';
+        }
+      } catch (err) {
+        responseBox.innerText = "Error generating SMART Rock.";
+        suggestionsBox.style.display = 'none';
+      }
+    });
+
+    resetBtn.addEventListener("click", () => {
+      goalInput.value = "";
+      responseBox.innerText = "";
+      suggestionList.innerHTML = "";
+      suggestionsBox.style.display = 'none';
+    });
+
+    toggle.addEventListener('change', () => {
+      window.location.href = 'guided.html'; // go to guided mode
+    });
+  </script>
 </body>
 </html>

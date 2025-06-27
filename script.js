@@ -1,44 +1,55 @@
-// script.js
-async function submitGoal() {
-  const userInput = document.getElementById("userInput").value;
+document.addEventListener("DOMContentLoaded", () => {
+  const modeToggle = document.getElementById("mode-toggle");
+  const title = document.getElementById("builder-title");
   const output = document.getElementById("output");
-  const suggestions = document.getElementById("suggestions");
+  const form = document.getElementById("smart-form");
+  const userInput = document.getElementById("user-input");
 
-  output.style.display = "none";  // Hide initially
-  suggestions.innerHTML = "";
+  // Initialize mode
+  let mode = "classic";
 
-  output.textContent = "Thinking...";
-  output.style.display = "block";  // Show while working
+  // Update UI based on mode
+  const updateModeUI = () => {
+    if (mode === "guided") {
+      title.textContent = "SMART Rock Coach";
+      userInput.placeholder = "Let's begin. What is your Rock?";
+    } else {
+      title.textContent = "SMART Rock Builder";
+      userInput.placeholder = "Type your response...";
+    }
+    output.innerHTML = ""; // Clear output on mode change
+  };
 
-  try {
-    const response = await fetch("/.netlify/functions/coach_smart_rocks", {
-      method: "POST",
-      body: JSON.stringify({ prompt: userInput }),
-    });
+  // Toggle listener
+  modeToggle.addEventListener("change", () => {
+    mode = modeToggle.checked ? "guided" : "classic";
+    updateModeUI();
+    console.log("Switched to:", mode);
+  });
 
-    const data = await response.json();
-    output.textContent = data.result || data.error || "Unexpected error.";
+  // Submit logic (basic structure)
+  form.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const userText = userInput.value.trim();
+    if (!userText) return;
 
-    if (data.result) {
-      const altPrompt = `Suggest 3 alternate phrasings of this SMART Rock:\n\n${data.result}`;
-      const suggestionsResponse = await fetch("/.netlify/functions/coach_smart_rocks", {
+    output.innerHTML = `<p><em>Thinking...</em></p>`;
+
+    try {
+      const response = await fetch("/.netlify/functions/coach_smart_rocks", {
         method: "POST",
-        body: JSON.stringify({ prompt: altPrompt }),
+        body: JSON.stringify({
+          prompt: userText,
+          mode: mode,
+        }),
       });
 
-      const suggestionsData = await suggestionsResponse.json();
-      if (suggestionsData.result) {
-        const lines = suggestionsData.result.split(/\n+/);
-        lines.forEach(line => {
-          const li = document.createElement("li");
-          li.textContent = line.replace(/^\d+\.\s*/, "");
-          suggestions.appendChild(li);
-        });
-      }
+      const data = await response.json();
+      output.innerHTML = `<pre>${data.result || "No response."}</pre>`;
+    } catch (err) {
+      output.innerHTML = `<p style="color:red;">Error: ${err.message}</p>`;
     }
+  });
 
-  } catch (err) {
-    output.textContent = "Failed to connect to server.";
-    console.error(err);
-  }
-}
+  updateModeUI(); // Run once on load
+});
