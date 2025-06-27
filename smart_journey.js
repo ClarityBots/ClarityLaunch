@@ -1,4 +1,5 @@
 // smart_journey.js
+
 const steps = ["Specific", "Measurable", "Achievable", "Relevant", "Time-bound"];
 let currentStepIndex = 0;
 let smartData = {};
@@ -16,22 +17,12 @@ submitBtn.addEventListener("click", async () => {
   inputField.value = "";
 
   const step = steps[currentStepIndex];
-  const aiResponse = await getAIResponse(userInput, step);
-  appendMessage("bot", aiResponse);
+  const suggestions = await getAISuggestions(userInput, step);
 
-  const confirm = await waitForUserApproval();
-  if (confirm) {
-    smartData[step.toLowerCase()] = aiResponse;
-    currentStepIndex++;
-
-    if (currentStepIndex < steps.length) {
-      appendMessage("bot", `Now let's work on **${steps[currentStepIndex]}**.`);
-    } else {
-      const summary = await getSummaryFromBackend(smartData);
-      showSummary(summary);
-    }
+  if (suggestions.length > 0) {
+    showSuggestionOptions(suggestions, step);
   } else {
-    appendMessage("bot", `Okay, let’s try a new response for **${step}**.`);
+    appendMessage("bot", "AI didn't respond as expected.");
   }
 });
 
@@ -43,59 +34,57 @@ function appendMessage(sender, text) {
   conversationBox.scrollTop = conversationBox.scrollHeight;
 }
 
-function waitForUserApproval() {
-  return new Promise((resolve) => {
-    const approveBtn = document.createElement("button");
-    approveBtn.textContent = "Accept";
-    approveBtn.onclick = () => {
-      approveBtn.remove();
-      reviseBtn.remove();
-      resolve(true);
-    };
+function showSuggestionOptions(suggestions, step) {
+  const wrapper = document.createElement("div");
+  wrapper.className = "bot";
 
-    const reviseBtn = document.createElement("button");
-    reviseBtn.textContent = "Revise";
-    reviseBtn.onclick = () => {
-      approveBtn.remove();
-      reviseBtn.remove();
-      resolve(false);
-    };
+  suggestions.forEach((suggestion, index) => {
+    const btn = document.createElement("button");
+    btn.textContent = suggestion;
+    btn.onclick = () => {
+      smartData[step.toLowerCase()] = suggestion;
+      appendMessage("bot", `✅ Selected: ${suggestion}`);
+      wrapper.remove();
 
-    conversationBox.appendChild(approveBtn);
-    conversationBox.appendChild(reviseBtn);
+      currentStepIndex++;
+
+      if (currentStepIndex < steps.length) {
+        appendMessage("bot", `Now let’s work on ${steps[currentStepIndex]}...`);
+      } else {
+        generateSmartSummary(smartData);
+      }
+    };
+    wrapper.appendChild(btn);
   });
+
+  conversationBox.appendChild(wrapper);
 }
 
-async function getAIResponse(userInput, step) {
+async function getAISuggestions(userInput, step) {
   try {
     const res = await fetch("/.netlify/functions/coach_smart_rocks", {
       method: "POST",
       body: JSON.stringify({ prompt: userInput, step }),
     });
     const data = await res.json();
-    return data.reply || "AI didn't respond as expected.";
+    return data.suggestions || [];
   } catch (e) {
-    return "Error contacting AI.";
+    return [];
   }
 }
 
-async function getSummaryFromBackend(smartData) {
+async function generateSmartSummary(smartData) {
   try {
     const res = await fetch("/.netlify/functions/coach_smart_rocks", {
       method: "POST",
       body: JSON.stringify({ step: "summary", smartData }),
     });
     const data = await res.json();
-    return data.summary || "Could not generate summary.";
+    showSummary(data.summary);
   } catch (e) {
-    return "Error generating summary.";
+    showSummary("Error generating SMART summary.");
   }
 }
-
-document.getElementById("copySummaryBtn").addEventListener("click", () => {
-  navigator.clipboard.writeText(summaryText.innerText);
-  alert("Summary copied to clipboard!");
-});
 
 function showSummary(text) {
   summaryText.innerText = text;
