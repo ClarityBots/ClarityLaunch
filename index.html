@@ -3,28 +3,28 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>ClarityLaunch – EOS AI Coach</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>SMART Rock Builder</title>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <div class="background-wrapper">
-    <img src="images/image_background.jpg" alt="Launch Background" class="background-image" />
-    <div class="white-glow"></div>
+  <div class="app-container">
+    <h1>SMART Rock Builder</h1>
+    
+    <div id="conversation" class="conversation-box"></div>
+
+    <div class="input-area">
+      <textarea id="userInput" placeholder="Type your response..."></textarea>
+      <button id="submitBtn">Submit</button>
+    </div>
+
+    <div class="summary-container" id="summaryContainer" style="display: none;">
+      <h2>Final SMART Rock</h2>
+      <p id="summaryText"></p>
+      <button id="copySummaryBtn">Copy to Clipboard</button>
+    </div>
   </div>
 
-  <div class="main-content">
-    <h1>ClarityLaunch</h1>
-    <p>Define your SMART Rock:</p>
-    <textarea id="userInput" placeholder="Type your goal here..."></textarea>
-    <button onclick="submitGoal()">Refine with AI</button>
-    <pre id="output" style="display: none;"></pre>
-
-    <h3>Smart Suggestions</h3>
-    <ul id="suggestions"></ul>
-  </div>
-
-  <script src="script.js"></script>
+  <script src="smart_journey.js"></script>
 </body>
 </html>

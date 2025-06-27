@@ -1,49 +1,86 @@
+// .netlify/functions/coach_smart_rocks.js
 const { OpenAI } = require("openai");
 
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-});
+let openai;
+
+try {
+  openai = new OpenAI({
+    apiKey: process.env.OPENAI_API_KEY,
+  });
+} catch (initError) {
+  console.error("Failed to initialize OpenAI:", initError);
+}
 
 exports.handler = async (event) => {
   try {
-    const body = JSON.parse(event.body);
-    const userPrompt = body.prompt || "Help me define a SMART goal.";
+    if (!openai) {
+      throw new Error("OpenAI client not initialized.");
+    }
 
-    const systemPrompt = `
-You are an expert EOS® facilitator and AI coach. Take the user's goal and refine it using the SMART framework:
-- **S**pecific
-- **M**easurable
-- **A**chievable
-- **R**elevant
-- **T**ime-bound
+    const body = JSON.parse(event.body || "{}");
+    const { prompt, step, smartData } = body;
 
-Respond in this format:
+    if (!step) {
+      throw new Error("Missing 'step' in request.");
+    }
 
-1. **Specific:** ...
-2. **Measurable:** ...
-3. **Achievable:** ...
-4. **Relevant:** ...
-5. **Time-bound:** ...
+    if (step === "summary") {
+      if (!smartData || !smartData.specific) {
+        throw new Error("Missing smartData for summary generation.");
+      }
 
-Then write a short summary paragraph version of the SMART Rock at the end. Do not include suggestions or alternatives unless explicitly asked.
-`;
+      const summaryPrompt = \`
+You are an expert EOS® facilitator. Using the SMART breakdown below, write a concise paragraph summarizing the complete SMART Rock in a way that’s ready to paste into Ninety.io. Avoid listing S-M-A-R-T; instead, consolidate into a natural business sentence.
 
-    const chatCompletion = await openai.chat.completions.create({
+SMART breakdown:
+Specific: \${smartData.specific}
+Measurable: \${smartData.measurable}
+Achievable: \${smartData.achievable}
+Relevant: \${smartData.relevant}
+Time-bound: \${smartData["time-bound"]}
+      \`;
+
+      const summaryResponse = await openai.chat.completions.create({
+        model: "gpt-4",
+        messages: [
+          { role: "system", content: "You are an EOS facilitator." },
+          { role: "user", content: summaryPrompt },
+        ],
+      });
+
+      const summaryText = summaryResponse.choices[0].message.content.trim();
+      return {
+        statusCode: 200,
+        body: JSON.stringify({ summary: summaryText }),
+      };
+    }
+
+    if (!prompt) {
+      throw new Error("Missing 'prompt' for SMART step refinement.");
+    }
+
+    const coachingPrompt = \`
+You are an EOS® coach helping a client define their SMART Rock. Focus only on the "\${step}" component. Respond with one concise, practical suggestion.
+
+User's input: \${prompt}
+\`;
+
+    const aiResponse = await openai.chat.completions.create({
       model: "gpt-4",
       messages: [
-        { role: "system", content: systemPrompt },
-        { role: "user", content: userPrompt }
+        { role: "system", content: "You are an EOS SMART Rock coach." },
+        { role: "user", content: coachingPrompt },
       ],
     });
 
-    const result = chatCompletion.choices[0].message.content;
+    const reply = aiResponse.choices[0].message.content.trim();
+
     return {
       statusCode: 200,
-      body: JSON.stringify({ result }),
+      body: JSON.stringify({ reply }),
     };
-
-  } catch (error) {
-    console.error("Error in coach_smart_rocks.js:", error);
+  } catch (err) {
+    console.error("Function error:", err);
     return {
       statusCode: 500,
       body: JSON.stringify({ error: "An error occurred while processing your request." }),
