@@ -1,139 +1,105 @@
-/* Reset & base styles */
+/* style.css */
+
 body {
-  margin: 0;
-  padding: 0;
   font-family: 'Inter', sans-serif;
   background-color: #f9fafb;
-  color: #111827;
+  color: #1f2937;
+  margin: 0;
+  padding: 0;
+  line-height: 1.6;
 }
 
-/* Container layout */
 .container {
   max-width: 700px;
   margin: 3rem auto;
-  padding: 2rem;
   background: #ffffff;
+  padding: 2rem;
   border-radius: 12px;
-  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 0 12px rgba(0, 0, 0, 0.08);
 }
 
-/* Headings */
-h1 {
-  font-size: 2rem;
-  color: #1e293b;
-  margin-bottom: 1rem;
-}
-
-h2 {
-  font-size: 1.5rem;
-  color: #1e293b;
-  margin-top: 2.5rem;
-  margin-bottom: 1rem;
-}
-
-/* Form labels and inputs */
-label {
-  display: block;
+h1, h2, h3 {
   font-weight: 600;
-  margin-top: 1.25rem;
+  color: #111827;
+  margin-top: 2rem;
+  margin-bottom: 1rem;
+}
+
+label {
+  font-weight: 600;
+  display: block;
   margin-bottom: 0.5rem;
+  margin-top: 1.5rem;
 }
 
 textarea {
   width: 100%;
-  min-height: 100px;
+  min-height: 90px;
   padding: 0.75rem;
   font-size: 1rem;
+  font-family: 'Inter', sans-serif;
   border-radius: 0.75rem;
-  border: 1px solid #cbd5e1;
+  border: 1px solid #d1d5db;
+  background-color: #fefefe;
   resize: vertical;
+  line-height: 1.5;
 }
 
-/* Buttons */
 button {
-  margin-top: 1.5rem;
-  padding: 0.75rem 1.25rem;
-  font-size: 1rem;
   background-color: #2563eb;
-  color: #ffffff;
+  color: white;
   border: none;
-  border-radius: 0.5rem;
+  padding: 0.75rem 1.5rem;
+  margin-top: 2rem;
+  border-radius: 8px;
+  font-size: 1rem;
   cursor: pointer;
   font-weight: 600;
-  transition: background-color 0.2s ease;
 }
 
 button:hover {
   background-color: #1d4ed8;
 }
 
-/* SMART Rock response styling */
 #response-box {
-  background-color: #f8fafc;
-  border-radius: 12px;
+  margin-top: 2rem;
+  background-color: #f3f4f6;
   padding: 1.5rem;
-  margin-top: 1rem;
+  border-radius: 10px;
+  border: 1px solid #e5e7eb;
   font-size: 1rem;
-  line-height: 1.6;
-  color: #111827;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
-  white-space: pre-wrap;
+  line-height: 1.75;
 }
 
 #response-box strong {
-  color: #0f172a;
-  display: block;
+  font-weight: 700;
+  display: inline-block;
   margin-top: 1rem;
-  font-weight: 600;
 }
 
-/* Suggestions Panel */
-#suggestions-box {
-  background-color: #fff7ed;
-  border: 1px solid #fed7aa;
-  border-radius: 12px;
-  padding: 1rem 1.5rem;
-  margin-top: 2rem;
-  box-shadow: 0 1px 5px rgba(0, 0, 0, 0.04);
+ul {
+  margin-top: 1rem;
+  padding-left: 1.5rem;
 }
 
-#suggestions-box h3 {
-  margin-bottom: 0.5rem;
-  font-size: 1.1rem;
-  color: #b45309;
+li {
+  margin-bottom: 0.75rem;
+  line-height: 1.6;
 }
 
-#suggestion-list li {
-  margin-bottom: 0.5rem;
-  padding-left: 1rem;
-  position: relative;
-}
-
-#suggestion-list li::before {
-  content: "•";
-  position: absolute;
-  left: 0;
-  color: #fb923c;
-  font-size: 1.2rem;
-  line-height: 1;
-}
-
-/* Mode toggle */
 .mode-toggle-wrapper {
+  margin-top: 3rem;
   display: flex;
   align-items: center;
-  margin-top: 3rem;
-  gap: 1rem;
-  font-size: 1rem;
-  color: #334155;
+  gap: 0.75rem;
+  font-weight: 500;
 }
 
-/* Toggle switch */
 .switch {
   position: relative;
   display: inline-block;
-  width: 52px;
-  height: 28px;
+  width: 48px;
+  height: 26px;
 }
 
 .switch input {
@@ -149,17 +115,17 @@ button:hover {
   left: 0;
   right: 0;
   bottom: 0;
-  background-color: #cbd5e1;
+  background-color: #d1d5db;
   transition: 0.3s;
-  border-radius: 34px;
+  border-radius: 26px;
 }
 
 .slider:before {
   position: absolute;
   content: "";
-  height: 22px;
-  width: 22px;
-  left: 4px;
+  height: 20px;
+  width: 20px;
+  left: 3px;
   bottom: 3px;
   background-color: white;
   transition: 0.3s;
@@ -171,5 +137,28 @@ input:checked + .slider {
 }
 
 input:checked + .slider:before {
-  transform: translateX(24px);
+  transform: translateX(22px);
+}
+
+#mode-label {
+  font-size: 1rem;
+}
+
+.suggestions {
+  background-color: #fefce8;
+  border: 1px solid #fde68a;
+  padding: 1rem 1.5rem;
+  border-radius: 10px;
+  margin-top: 2rem;
+}
+
+.suggestions h3 {
+  font-size: 1.1rem;
+  margin-bottom: 0.75rem;
+}
+
+.formatted-response strong {
+  font-weight: 700;
+  display: inline-block;
+  margin-top: 1rem;
 }
