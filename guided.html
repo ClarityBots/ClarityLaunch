@@ -1,22 +1,18 @@
-<!-- guided.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>SMART Rock Builder – Guided Mode</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet"/>
   <link rel="stylesheet" href="style.css" />
-  <script src="main.js" defer></script>
+  <script defer src="main.js"></script>
 </head>
 <body>
-  <div class="background-wrapper">
-    <img src="images/background.jpg" alt="Background" class="background-image" />
-  </div>
-
-  <div class="app-container">
-    <div class="view-switcher">
-      <span onclick="location.href='index.html'">Classic</span>
-      <span class="active">Guided</span>
+  <div class="container">
+    <div class="toggle-group">
+      <span class="toggle-label" id="classic-label">Classic</span>
+      <span class="toggle-label active" id="guided-label">Guided</span>
     </div>
 
     <h1>SMART Rock Builder – Guided Mode</h1>
@@ -26,47 +22,42 @@
       <option value="">-- Select --</option>
       <option value="Integrator">Integrator</option>
       <option value="Visionary">Visionary</option>
-      <option value="EOS Implementer">EOS Implementer</option>
-      <option value="Self-Implementer">Self-Implementer</option>
+      <option value="Team Member">Team Member</option>
     </select>
 
-    <label for="specific">Specific</label>
-    <textarea id="specific" placeholder="What exactly do you want to accomplish?"></textarea>
+    <label for="specific">Specific – What exactly do you want to accomplish?</label>
+    <textarea id="specific" placeholder="Enter the specific objective..."></textarea>
 
-    <label for="measurable">Measurable</label>
-    <textarea id="measurable" placeholder="How will you measure success?"></textarea>
+    <label for="measurable">Measurable – How will you track progress or know it's complete?</label>
+    <textarea id="measurable" placeholder="Define measurable criteria..."></textarea>
 
-    <label for="achievable">Achievable</label>
-    <textarea id="achievable" placeholder="Is it realistic and doable within the timeframe?"></textarea>
+    <label for="achievable">Achievable – What resources or conditions make this realistic?</label>
+    <textarea id="achievable" placeholder="Explain why it's achievable..."></textarea>
 
-    <label for="relevant">Relevant</label>
-    <textarea id="relevant" placeholder="Why does this matter now? How does it support broader goals?"></textarea>
+    <label for="relevant">Relevant – Why does this goal matter now?</label>
+    <textarea id="relevant" placeholder="Explain relevance to the business..."></textarea>
 
-    <label for="timebound">Time-bound</label>
-    <textarea id="timebound" placeholder="What’s the deadline for achieving this?"></textarea>
+    <label for="timebound">Time-bound – What's the target deadline?</label>
+    <textarea id="timebound" placeholder="Specify a clear timeline..."></textarea>
 
-    <div class="checkbox-group">
-      <input type="checkbox" id="enhanced-ai" />
-      <label for="enhanced-ai">Use Enhanced AI</label>
+    <div>
+      <input type="checkbox" id="enhancedAI" />
+      <label for="enhancedAI">Use Enhanced AI</label>
     </div>
 
-    <div class="checkbox-group">
-      <input type="checkbox" id="include-milestones" />
-      <label for="include-milestones">Include Milestones</label>
+    <div>
+      <input type="checkbox" id="includeMilestones" />
+      <label for="includeMilestones">Include Milestones</label>
     </div>
 
-    <button id="generate-btn">Generate SMART Rock</button>
+    <button id="generateButton">Generate SMART Rock</button>
 
-    <div id="output-container">
+    <div id="output" class="output">
       <h2>Your SMART Rock</h2>
-      <div id="output"></div>
+      <p id="aiResponse">...</p>
     </div>
 
-    <button id="start-over">Start Over</button>
-
-    <div class="toggle-container">
-      <label for="toggle-mode">Classic | Guided</label>
-    </div>
+    <button id="startOverButton">Start Over</button>
   </div>
 </body>
 </html>

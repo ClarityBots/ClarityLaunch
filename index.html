@@ -1,56 +1,46 @@
-<!-- index.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>SMART Rock Builder</title>
+  <title>Clarity Launch – SMART Rock Builder</title>
   <link rel="stylesheet" href="style.css" />
-  <script src="main.js" defer></script>
 </head>
 <body>
-  <div class="background-wrapper">
-    <img src="images/background.jpg" alt="Background" class="background-image" />
-  </div>
-
-  <div class="app-container">
-    <div class="view-switcher">
-      <span id="view-classic" class="view-active">Classic</span> |
-      <span id="view-guided" class="view-inactive">Guided</span>
+  <div class="container">
+    <div class="toggle-wrapper">
+      <span class="mode active" data-mode="classic">Classic</span>
+      <span class="divider">|</span>
+      <span class="mode" data-mode="guided">Guided</span>
     </div>
 
     <h1>SMART Rock Builder – Classic Mode</h1>
-
     <label for="role">Your role</label>
     <select id="role">
-      <option value="">-- Select --</option>
-      <option value="Integrator">Integrator</option>
-      <option value="Visionary">Visionary</option>
-      <option value="EOS Implementer">EOS Implementer</option>
-      <option value="Self-Implementer">Self-Implementer</option>
+      <option value="">-- Select --</option>
+      <option>Visionary</option>
+      <option>Integrator</option>
+      <option>Leader</option>
+      <option>Team Member</option>
     </select>
 
-    <label for="goal">What’s the Rock you want to refine?</label>
-    <textarea id="goal" placeholder="Describe your goal..."></textarea>
+    <label for="prompt" class="textarea-label">What’s the Rock you want to refine?</label>
+    <textarea id="prompt" placeholder="Describe your goal..."></textarea>
 
-    <div class="checkbox-group">
-      <input type="checkbox" id="enhanced-ai" />
-      <label for="enhanced-ai">Use Enhanced AI</label>
+    <div class="options">
+      <label><input type="checkbox" id="useEnhanced" /> Use Enhanced AI</label>
+      <label><input type="checkbox" id="includeMilestones" /> Include Milestones</label>
     </div>
 
-    <div class="checkbox-group">
-      <input type="checkbox" id="include-milestones" />
-      <label for="include-milestones">Include Milestones</label>
-    </div>
+    <button id="submitBtn">Generate SMART Rock</button>
 
-    <button id="generate-btn">Generate SMART Rock</button>
-
-    <div id="output-container">
+    <div id="output">
       <h2>Your SMART Rock</h2>
-      <div id="output"></div>
+      <div id="result">Awaiting input...</div>
+      <button id="startOverBtn">Start Over</button>
     </div>
-
-    <button id="start-over">Start Over</button>
   </div>
+
+  <script src="main.js"></script>
 </body>
 </html>

@@ -1,79 +1,69 @@
-// main.js
-
-document.addEventListener("DOMContentLoaded", () => {
-  const roleInput = document.getElementById("role");
-  const goalInput = document.getElementById("goal");
-  const enhancedCheckbox = document.getElementById("enhanced-ai");
-  const milestoneCheckbox = document.getElementById("include-milestones");
-  const generateBtn = document.getElementById("generate-btn");
-  const outputContainer = document.getElementById("output");
-  const startOverBtn = document.getElementById("start-over");
-
-  const viewClassic = document.getElementById("view-classic");
-  const viewGuided = document.getElementById("view-guided");
-
-  // View switcher
-  if (viewClassic && viewGuided) {
-    viewClassic.addEventListener("click", () => {
-      window.location.href = "index.html";
+function initModeSwitch() {
+  document.querySelectorAll('.mode').forEach(el => {
+    el.addEventListener('click', () => {
+      const mode = el.getAttribute('data-mode');
+      window.location = mode === 'guided' ? 'guided.html' : 'index.html';
     });
-    viewGuided.addEventListener("click", () => {
-      window.location.href = "guided.html";
-    });
+  });
+}
+
+async function handleSubmit({ promptEl, roleEl, enhancedEl, milestoneEl, resultEl }) {
+  const prompt = promptEl.value.trim();
+  if (!prompt || !roleEl.value) {
+    resultEl.textContent = 'Please select your role and enter a goal.';
+    return;
   }
 
-  // Clear fields
-  startOverBtn.addEventListener("click", () => {
-    roleInput.value = "";
-    goalInput.value = "";
-    enhancedCheckbox.checked = false;
-    milestoneCheckbox.checked = false;
-    outputContainer.innerHTML = "";
+  resultEl.textContent = 'Loading…';
+  try {
+    const resp = await fetch('/.netlify/functions/coach_smart_rocks', {
+      method: 'POST',
+      body: JSON.stringify({
+        prompt,
+        role: roleEl.value,
+        enhanced: enhancedEl.checked,
+        milestones: milestoneEl.checked,
+      })
+    });
+    const { text } = await resp.json();
+    resultEl.textContent = text || 'No result received.';
+  } catch (err) {
+    resultEl.textContent = 'Error generating SMART Rock. Please try again.';
+  }
+}
+
+function bindClassic() {
+  document.getElementById('submitBtn').addEventListener('click', () => {
+    handleSubmit({
+      promptEl: document.getElementById('prompt'),
+      roleEl: document.getElementById('role'),
+      enhancedEl: document.getElementById('useEnhanced'),
+      milestoneEl: document.getElementById('includeMilestones'),
+      resultEl: document.getElementById('result'),
+    });
   });
-
-  generateBtn.addEventListener("click", async () => {
-    const role = roleInput.value.trim();
-    const goal = goalInput.value.trim();
-    const useEnhancedAI = enhancedCheckbox.checked;
-    const includeMilestones = milestoneCheckbox.checked;
-
-    if (!goal) {
-      outputContainer.innerHTML = "<p>Please enter your goal.</p>";
-      return;
-    }
-
-    let prompt = `
-You are an expert EOS® Implementer helping a ${role || "user"} refine a ROCK using the SMART framework.
-
-The user’s goal is: ${goal}
-
-Respond with a SMART breakdown:
-1. **Specific:** ...
-2. **Measurable:** ...
-3. **Achievable:** ...
-4. **Relevant:** ...
-5. **Time-bound:** ...
-
-Then, write a summary paragraph that clearly defines the ROCK.
-
-${useEnhancedAI ? "Also include three suggestions to improve this ROCK as a bulleted list." : ""}
-${includeMilestones ? "Then break the ROCK into 3–5 logical milestones with interim due dates before the final deadline." : ""}
-`;
-
-    outputContainer.innerHTML = "<p>Thinking...</p>";
-
-    try {
-      const res = await fetch("/.netlify/functions/coach_smart_rocks", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ prompt }),
-      });
-
-      const data = await res.json();
-      outputContainer.innerHTML = data.message || "<p>Something went wrong.</p>";
-    } catch (err) {
-      console.error(err);
-      outputContainer.innerHTML = "<p>Error generating response.</p>";
-    }
+  document.getElementById('startOverBtn').addEventListener('click', () => {
+    window.location = 'index.html';
   });
+}
+
+function bindGuided() {
+  document.getElementById('submit-guided').addEventListener('click', () => {
+    handleSubmit({
+      promptEl: document.getElementById('prompt-guided'),
+      roleEl: document.getElementById('role-guided'),
+      enhancedEl: document.getElementById('useEnhanced-guided'),
+      milestoneEl: document.getElementById('includeMilestones-guided'),
+      resultEl: document.getElementById('result-guided'),
+    });
+  });
+  document.getElementById('startOver-guided').addEventListener('click', () => {
+    window.location = 'guided.html';
+  });
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  initModeSwitch();
+  if (document.body.textContent.includes('Classic Mode')) bindClassic();
+  else bindGuided();
 });
