@@ -1,69 +1,39 @@
-function initModeSwitch() {
-  document.querySelectorAll('.mode').forEach(el => {
-    el.addEventListener('click', () => {
-      const mode = el.getAttribute('data-mode');
-      window.location = mode === 'guided' ? 'guided.html' : 'index.html';
-    });
-  });
-}
+// main.js
 
-async function handleSubmit({ promptEl, roleEl, enhancedEl, milestoneEl, resultEl }) {
-  const prompt = promptEl.value.trim();
-  if (!prompt || !roleEl.value) {
-    resultEl.textContent = 'Please select your role and enter a goal.';
-    return;
-  }
+document.addEventListener("DOMContentLoaded", () => {
+  const generateBtn = document.getElementById("generateBtn");
+  const outputContainer = document.getElementById("outputContainer");
+  const goalInput = document.getElementById("goalInput");
+  const roleSelect = document.getElementById("roleSelect");
+  const enhancedAI = document.getElementById("enhancedAI");
+  const includeMilestones = document.getElementById("includeMilestones");
 
-  resultEl.textContent = 'Loading…';
-  try {
-    const resp = await fetch('/.netlify/functions/coach_smart_rocks', {
-      method: 'POST',
-      body: JSON.stringify({
-        prompt,
-        role: roleEl.value,
-        enhanced: enhancedEl.checked,
-        milestones: milestoneEl.checked,
-      })
-    });
-    const { text } = await resp.json();
-    resultEl.textContent = text || 'No result received.';
-  } catch (err) {
-    resultEl.textContent = 'Error generating SMART Rock. Please try again.';
-  }
-}
+  generateBtn.addEventListener("click", async () => {
+    const userPrompt = goalInput.value.trim();
+    if (!userPrompt) {
+      outputContainer.innerHTML = "<p>Please enter a SMART Rock goal.</p>";
+      return;
+    }
 
-function bindClassic() {
-  document.getElementById('submitBtn').addEventListener('click', () => {
-    handleSubmit({
-      promptEl: document.getElementById('prompt'),
-      roleEl: document.getElementById('role'),
-      enhancedEl: document.getElementById('useEnhanced'),
-      milestoneEl: document.getElementById('includeMilestones'),
-      resultEl: document.getElementById('result'),
-    });
-  });
-  document.getElementById('startOverBtn').addEventListener('click', () => {
-    window.location = 'index.html';
-  });
-}
+    const payload = {
+      prompt: userPrompt,
+      role: roleSelect?.value || "",
+      aiMode: enhancedAI?.checked ? "enhanced" : "standard",
+      includeMilestones: includeMilestones?.checked || false
+    };
 
-function bindGuided() {
-  document.getElementById('submit-guided').addEventListener('click', () => {
-    handleSubmit({
-      promptEl: document.getElementById('prompt-guided'),
-      roleEl: document.getElementById('role-guided'),
-      enhancedEl: document.getElementById('useEnhanced-guided'),
-      milestoneEl: document.getElementById('includeMilestones-guided'),
-      resultEl: document.getElementById('result-guided'),
-    });
-  });
-  document.getElementById('startOver-guided').addEventListener('click', () => {
-    window.location = 'guided.html';
-  });
-}
+    try {
+      const response = await fetch("/.netlify/functions/coach_smart_rocks", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload)
+      });
 
-document.addEventListener('DOMContentLoaded', () => {
-  initModeSwitch();
-  if (document.body.textContent.includes('Classic Mode')) bindClassic();
-  else bindGuided();
+      const data = await response.json();
+      outputContainer.innerHTML = data.output ? `<div>${data.output}</div>` : "<p>No result received.</p>";
+    } catch (err) {
+      console.error("Error:", err);
+      outputContainer.innerHTML = "<p>Error generating SMART Rock. Please try again.</p>";
+    }
+  });
 });

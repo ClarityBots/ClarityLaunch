@@ -11,8 +11,8 @@ exports.handler = async (event) => {
     const body = JSON.parse(event.body);
     const userPrompt = body.prompt || "Help me define a SMART goal.";
     const userRole = body.role || "";
-    const includeMilestones = body.includeMilestones || false;
-    const aiMode = body.aiMode || "standard";
+    const includeMilestones = body.milestones || false;
+    const aiMode = body.enhanced ? "enhanced" : "standard";
 
     const systemPrompt = aiMode === "enhanced"
       ? `You are the AI Implementer+™ — a world-class AI coach modeled after the top 1% of EOS Implementers®. You're trained in the Entrepreneurial Operating System® (EOS®) and specialize in helping Visionaries™, Integrators™, Leadership Teams, and EOS Implementers® gain traction with absolute clarity.
@@ -62,15 +62,14 @@ Then write a short summary paragraph version of the SMART Rock at the end. Do no
 
     const rawOutput = chatCompletion.choices[0].message.content;
 
-    // Format markdown to HTML
     const formattedOutput = rawOutput
-      .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')  // bold
-      .replace(/\n{2,}/g, '<br /><br />')                // multiple line breaks => paragraph space
-      .replace(/\n/g, ' ');                              // single line break => space (less vertical space)
+      .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+      .replace(/\n{2,}/g, '<br /><br />')
+      .replace(/\n/g, ' ');
 
     return {
       statusCode: 200,
-      body: JSON.stringify({ output: formattedOutput }),
+      body: JSON.stringify({ message: formattedOutput }), // <-- FIXED LINE
     };
   } catch (error) {
     console.error("Error generating SMART Rock:", error);
