@@ -1,95 +1,20 @@
-/* General Reset and Base Styles */
+/* Base reset and layout */
 body {
   font-family: 'Inter', sans-serif;
   margin: 0;
   padding: 0;
   background-color: #f8f9fa;
   color: #333;
+  position: relative;
 }
 
-/* Layout Containers */
-.container {
-  max-width: 900px;
-  margin: 0 auto;
-  padding: 2rem;
-}
-
-/* Headings */
-h1, h2, h3 {
-  font-weight: 600;
-  color: #1a1a1a;
-}
-
-/* Inputs and Selects */
-textarea,
-select {
-  width: 100%;
-  padding: 0.75rem;
-  margin-bottom: 1rem;
-  font-size: 1rem;
-  border-radius: 0.5rem;
-  border: 1px solid #ccc;
-  resize: vertical;
-}
-
-label {
-  font-weight: 500;
-  display: block;
-  margin: 1rem 0 0.5rem;
-}
-
-button {
-  background-color: #007bff;
-  color: #fff;
-  padding: 0.75rem 1.25rem;
-  font-size: 1rem;
-  border: none;
-  border-radius: 0.5rem;
-  cursor: pointer;
-  margin-top: 1rem;
-}
-
-button:hover {
-  background-color: #0056b3;
-}
-
-/* AI Output Styling */
-.smart-output {
-  background-color: #fff;
-  border-radius: 1rem;
-  padding: 1.5rem;
-  margin-top: 2rem;
-  line-height: 1.4;
-  box-shadow: 0 0 15px rgba(0, 0, 0, 0.05);
-}
-
-/* Markdown formatting */
-.smart-output strong {
-  display: block;
-  margin-bottom: 0.2rem;
-  font-weight: 600;
-}
-
-/* Toggle switches */
-.toggle-container {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 2rem;
-  margin-top: 2rem;
-}
-
-.toggle-container label {
-  font-weight: normal;
-}
-
-/* Background image styles */
+/* Background image handling */
 .background-wrapper {
   position: fixed;
   top: 0;
   left: 0;
-  width: 100%;
-  height: 100%;
+  width: 100vw;
+  height: 100vh;
   z-index: -1;
   overflow: hidden;
 }
@@ -98,22 +23,112 @@ button:hover {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  opacity: 0.15;
-  filter: brightness(0.6);
+  opacity: 0.2;
+  filter: brightness(0.4) contrast(1.2);
 }
 
-/* Responsive Design */
+/* Core layout */
+.container {
+  max-width: 900px;
+  margin: 2rem auto;
+  padding: 2rem;
+  background-color: rgba(255, 255, 255, 0.96);
+  border-radius: 1.25rem;
+  box-shadow: 0 0 60px rgba(0, 0, 0, 0.06);
+}
+
+/* Typography */
+h1, h2, h3 {
+  font-weight: 600;
+  color: #1a1a1a;
+  margin-top: 1.5rem;
+  margin-bottom: 0.5rem;
+  line-height: 1.3;
+}
+
+strong {
+  font-weight: 700;
+}
+
+/* Compact spacing between section headers and body text */
+.smart-output strong {
+  display: inline-block;
+  margin-bottom: 0.1rem;
+}
+
+.smart-output br + strong {
+  margin-top: 0.5rem;
+  display: inline-block;
+}
+
+/* Labels */
+label {
+  display: block;
+  margin: 1rem 0 0.5rem;
+  font-weight: 500;
+}
+
+/* Form inputs */
+textarea,
+select {
+  width: 100%;
+  padding: 0.75rem;
+  font-size: 1rem;
+  border-radius: 0.75rem;
+  border: 1px solid #ccc;
+  resize: vertical;
+  margin-bottom: 1rem;
+}
+
+/* Buttons */
+button {
+  background-color: #007bff;
+  color: #fff;
+  padding: 0.75rem 1.5rem;
+  font-size: 1rem;
+  border: none;
+  border-radius: 0.75rem;
+  cursor: pointer;
+  transition: background-color 0.2s ease-in-out;
+}
+
+button:hover {
+  background-color: #0056b3;
+}
+
+/* AI Output styling */
+.smart-output {
+  background-color: #fff;
+  border-radius: 1.25rem;
+  padding: 1.5rem;
+  margin-top: 2rem;
+  font-size: 1rem;
+  line-height: 1.6;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.04);
+}
+
+/* Toggle controls */
+.toggle-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 2rem;
+  margin-top: 2rem;
+}
+
+/* Responsive behavior */
 @media (max-width: 768px) {
   .container {
-    padding: 1rem;
-  }
-
-  button {
-    width: 100%;
+    padding: 1.25rem;
+    margin: 1rem;
   }
 
   .toggle-container {
     flex-direction: column;
     gap: 1rem;
+  }
+
+  button {
+    width: 100%;
   }
 }
