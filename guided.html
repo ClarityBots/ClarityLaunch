@@ -1,120 +1,72 @@
-<!-- File: guided.html -->
+<!-- guided.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Clarity Launch – Guided SMART Rock Builder</title>
+  <title>SMART Rock Builder – Guided Mode</title>
   <link rel="stylesheet" href="style.css" />
+  <script src="main.js" defer></script>
 </head>
 <body>
-  <div class="container">
-    <h1>SMART Rock Builder – Guided Mode</h1>
-
-    <label for="userRole">Your role</label>
-    <select id="userRole">
-      <option value="">-- Select --</option>
-      <option value="Visionary">Visionary</option>
-      <option value="Integrator">Integrator</option>
-      <option value="EOS Implementer">EOS Implementer®</option>
-      <option value="Leadership Team Member">Leadership Team Member</option>
-    </select>
-
-    <form id="guidedForm">
-      <label for="specific">1. Specific: What exactly do you want to accomplish?</label>
-      <textarea id="specific" required></textarea>
-
-      <label for="measurable">2. Measurable: How will you track success?</label>
-      <textarea id="measurable" required></textarea>
-
-      <label for="achievable">3. Achievable: Why is this realistic and doable?</label>
-      <textarea id="achievable" required></textarea>
-
-      <label for="relevant">4. Relevant: Why does this matter to your business/life?</label>
-      <textarea id="relevant" required></textarea>
-
-      <label for="timebound">5. Time-bound: What is your deadline?</label>
-      <textarea id="timebound" required></textarea>
-
-      <div class="checkbox-group">
-        <label><input type="checkbox" id="aiModeToggle" /> Use Enhanced AI</label><br />
-        <label><input type="checkbox" id="includeMilestones" /> Include Milestones</label>
-      </div>
-
-      <button type="submit">Generate SMART Rock</button>
-    </form>
-
-    <h2>Your SMART Rock</h2>
-    <div id="outputBox" class="output-box"></div>
-
-    <button id="startOverBtn">Start Over</button>
-
-    <div class="toggle-group">
-      <label>
-        <input type="checkbox" id="modeToggle" />
-        <span>Classic | Guided</span>
-      </label>
-    </div>
+  <div class="background-wrapper">
+    <img src="images/background.jpg" alt="Background" class="background-image" />
   </div>
 
-  <script>
-    document.addEventListener("DOMContentLoaded", () => {
-      const form = document.getElementById("guidedForm");
-      const outputBox = document.getElementById("outputBox");
-      const aiToggle = document.getElementById("aiModeToggle");
-      const milestoneToggle = document.getElementById("includeMilestones");
-      const modeToggle = document.getElementById("modeToggle");
+  <div class="app-container">
+    <div class="view-switcher">
+      <span onclick="location.href='index.html'">Classic</span>
+      <span class="active">Guided</span>
+    </div>
 
-      // Enable/disable milestones checkbox based on enhanced AI toggle
-      const toggleMilestoneCheckbox = () => {
-        milestoneToggle.disabled = !aiToggle.checked;
-        if (!aiToggle.checked) milestoneToggle.checked = false;
-      };
+    <h1>SMART Rock Builder – Guided Mode</h1>
 
-      aiToggle.addEventListener("change", toggleMilestoneCheckbox);
-      toggleMilestoneCheckbox();
+    <label for="role">Your role</label>
+    <select id="role">
+      <option value="">-- Select --</option>
+      <option value="Integrator">Integrator</option>
+      <option value="Visionary">Visionary</option>
+      <option value="EOS Implementer">EOS Implementer</option>
+      <option value="Self-Implementer">Self-Implementer</option>
+    </select>
 
-      form.addEventListener("submit", async (e) => {
-        e.preventDefault();
-        outputBox.innerHTML = "Thinking...";
+    <label for="specific">Specific</label>
+    <textarea id="specific" placeholder="What exactly do you want to accomplish?"></textarea>
 
-        const prompt = `
-1. Specific: ${document.getElementById("specific").value}
-2. Measurable: ${document.getElementById("measurable").value}
-3. Achievable: ${document.getElementById("achievable").value}
-4. Relevant: ${document.getElementById("relevant").value}
-5. Time-bound: ${document.getElementById("timebound").value}
-        `.trim();
+    <label for="measurable">Measurable</label>
+    <textarea id="measurable" placeholder="How will you measure success?"></textarea>
 
-        try {
-          const response = await fetch("/.netlify/functions/coach_smart_rocks", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              prompt,
-              role: document.getElementById("userRole").value,
-              aiMode: aiToggle.checked ? "enhanced" : "standard",
-              includeMilestones: milestoneToggle.checked
-            })
-          });
+    <label for="achievable">Achievable</label>
+    <textarea id="achievable" placeholder="Is it realistic and doable within the timeframe?"></textarea>
 
-          const data = await response.json();
-          outputBox.innerHTML = data.output;
-        } catch (err) {
-          outputBox.innerHTML = "⚠️ Error generating SMART Rock.";
-        }
-      });
+    <label for="relevant">Relevant</label>
+    <textarea id="relevant" placeholder="Why does this matter now? How does it support broader goals?"></textarea>
 
-      document.getElementById("startOverBtn").addEventListener("click", () => {
-        form.reset();
-        outputBox.innerHTML = "";
-        toggleMilestoneCheckbox();
-      });
+    <label for="timebound">Time-bound</label>
+    <textarea id="timebound" placeholder="What’s the deadline for achieving this?"></textarea>
 
-      modeToggle.addEventListener("change", () => {
-        window.location.href = "index.html";
-      });
-    });
-  </script>
+    <div class="checkbox-group">
+      <input type="checkbox" id="enhanced-ai" />
+      <label for="enhanced-ai">Use Enhanced AI</label>
+    </div>
+
+    <div class="checkbox-group">
+      <input type="checkbox" id="include-milestones" />
+      <label for="include-milestones">Include Milestones</label>
+    </div>
+
+    <button id="generate-btn">Generate SMART Rock</button>
+
+    <div id="output-container">
+      <h2>Your SMART Rock</h2>
+      <div id="output"></div>
+    </div>
+
+    <button id="start-over">Start Over</button>
+
+    <div class="toggle-container">
+      <label for="toggle-mode">Classic | Guided</label>
+    </div>
+  </div>
 </body>
 </html>

@@ -1,101 +1,56 @@
-<!-- File: index.html -->
+<!-- index.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Clarity Launch – SMART Rock Builder</title>
+  <title>SMART Rock Builder</title>
   <link rel="stylesheet" href="style.css" />
+  <script src="main.js" defer></script>
 </head>
 <body>
-  <div class="container">
-    <h1>SMART Rock Builder – Classic Mode</h1>
-
-    <label for="userRole">Your role</label>
-    <select id="userRole">
-      <option value="">-- Select --</option>
-      <option value="Visionary">Visionary</option>
-      <option value="Integrator">Integrator</option>
-      <option value="EOS Implementer">EOS Implementer®</option>
-      <option value="Leadership Team Member">Leadership Team Member</option>
-    </select>
-
-    <label for="userPrompt">What’s the Rock you want to refine?</label>
-    <textarea id="userPrompt" placeholder="Describe your goal..."></textarea>
-
-    <div class="checkbox-group">
-      <label><input type="checkbox" id="aiModeToggle" /> Use Enhanced AI</label><br />
-      <label><input type="checkbox" id="includeMilestones" /> Include Milestones</label>
-    </div>
-
-    <button id="generateBtn">Generate SMART Rock</button>
-
-    <h2>Your SMART Rock</h2>
-    <div id="outputBox" class="output-box"></div>
-
-    <button id="startOverBtn">Start Over</button>
-
-    <div class="toggle-group">
-      <label>
-        <input type="checkbox" id="modeToggle" />
-        <span>Classic | Guided</span>
-      </label>
-    </div>
+  <div class="background-wrapper">
+    <img src="images/background.jpg" alt="Background" class="background-image" />
   </div>
 
-  <script>
-    document.addEventListener("DOMContentLoaded", () => {
-      const aiToggle = document.getElementById("aiModeToggle");
-      const milestoneToggle = document.getElementById("includeMilestones");
-      const generateBtn = document.getElementById("generateBtn");
-      const outputBox = document.getElementById("outputBox");
-      const startOverBtn = document.getElementById("startOverBtn");
-      const modeToggle = document.getElementById("modeToggle");
+  <div class="app-container">
+    <div class="view-switcher">
+      <span id="view-classic" class="view-active">Classic</span> |
+      <span id="view-guided" class="view-inactive">Guided</span>
+    </div>
 
-      // Enable/disable milestones checkbox based on enhanced AI toggle
-      const toggleMilestoneCheckbox = () => {
-        milestoneToggle.disabled = !aiToggle.checked;
-        if (!aiToggle.checked) milestoneToggle.checked = false;
-      };
+    <h1>SMART Rock Builder – Classic Mode</h1>
 
-      aiToggle.addEventListener("change", toggleMilestoneCheckbox);
-      toggleMilestoneCheckbox();
+    <label for="role">Your role</label>
+    <select id="role">
+      <option value="">-- Select --</option>
+      <option value="Integrator">Integrator</option>
+      <option value="Visionary">Visionary</option>
+      <option value="EOS Implementer">EOS Implementer</option>
+      <option value="Self-Implementer">Self-Implementer</option>
+    </select>
 
-      generateBtn.addEventListener("click", async () => {
-        const userPrompt = document.getElementById("userPrompt").value;
-        const userRole = document.getElementById("userRole").value;
-        const aiMode = aiToggle.checked ? "enhanced" : "standard";
-        const includeMilestones = milestoneToggle.checked;
+    <label for="goal">What’s the Rock you want to refine?</label>
+    <textarea id="goal" placeholder="Describe your goal..."></textarea>
 
-        outputBox.innerHTML = "Thinking...";
+    <div class="checkbox-group">
+      <input type="checkbox" id="enhanced-ai" />
+      <label for="enhanced-ai">Use Enhanced AI</label>
+    </div>
 
-        try {
-          const response = await fetch("/.netlify/functions/coach_smart_rocks", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ prompt: userPrompt, role: userRole, aiMode, includeMilestones })
-          });
+    <div class="checkbox-group">
+      <input type="checkbox" id="include-milestones" />
+      <label for="include-milestones">Include Milestones</label>
+    </div>
 
-          const data = await response.json();
-          outputBox.innerHTML = data.output;
-        } catch (err) {
-          outputBox.innerHTML = "⚠️ Error generating SMART Rock.";
-        }
-      });
+    <button id="generate-btn">Generate SMART Rock</button>
 
-      startOverBtn.addEventListener("click", () => {
-        document.getElementById("userPrompt").value = "";
-        document.getElementById("userRole").value = "";
-        aiToggle.checked = false;
-        milestoneToggle.checked = false;
-        toggleMilestoneCheckbox();
-        outputBox.innerHTML = "";
-      });
+    <div id="output-container">
+      <h2>Your SMART Rock</h2>
+      <div id="output"></div>
+    </div>
 
-      modeToggle.addEventListener("change", () => {
-        window.location.href = "guided.html";
-      });
-    });
-  </script>
+    <button id="start-over">Start Over</button>
+  </div>
 </body>
 </html>
