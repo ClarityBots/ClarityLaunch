@@ -1,89 +1,120 @@
+<!-- File: guided.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>SMART Rock Guided Mode</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet" />
+  <title>Clarity Launch – Guided SMART Rock Builder</title>
   <link rel="stylesheet" href="style.css" />
-  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 </head>
 <body>
   <div class="container">
-    <h1>SMART Rock Builder (Guided)</h1>
+    <h1>SMART Rock Builder – Guided Mode</h1>
 
-    <label for="specific">Specific:</label>
-    <textarea id="specific" placeholder="What exactly do you want to accomplish?"></textarea>
+    <label for="userRole">Your role</label>
+    <select id="userRole">
+      <option value="">-- Select --</option>
+      <option value="Visionary">Visionary</option>
+      <option value="Integrator">Integrator</option>
+      <option value="EOS Implementer">EOS Implementer®</option>
+      <option value="Leadership Team Member">Leadership Team Member</option>
+    </select>
 
-    <label for="measurable">Measurable:</label>
-    <textarea id="measurable" placeholder="How will you measure progress or know it's done?"></textarea>
+    <form id="guidedForm">
+      <label for="specific">1. Specific: What exactly do you want to accomplish?</label>
+      <textarea id="specific" required></textarea>
 
-    <label for="achievable">Achievable:</label>
-    <textarea id="achievable" placeholder="Is the goal realistic given your resources?"></textarea>
+      <label for="measurable">2. Measurable: How will you track success?</label>
+      <textarea id="measurable" required></textarea>
 
-    <label for="relevant">Relevant:</label>
-    <textarea id="relevant" placeholder="Why is this goal important or strategic?"></textarea>
+      <label for="achievable">3. Achievable: Why is this realistic and doable?</label>
+      <textarea id="achievable" required></textarea>
 
-    <label for="timebound">Time-bound:</label>
-    <textarea id="timebound" placeholder="What is the deadline or time frame?"></textarea>
+      <label for="relevant">4. Relevant: Why does this matter to your business/life?</label>
+      <textarea id="relevant" required></textarea>
 
-    <button onclick="submitGuided()">Build My SMART Rock</button>
+      <label for="timebound">5. Time-bound: What is your deadline?</label>
+      <textarea id="timebound" required></textarea>
 
-    <div id="response-box" class="formatted-response"></div>
+      <div class="checkbox-group">
+        <label><input type="checkbox" id="aiModeToggle" /> Use Enhanced AI</label><br />
+        <label><input type="checkbox" id="includeMilestones" /> Include Milestones</label>
+      </div>
 
-    <button onclick="startOver()">Start Over</button>
+      <button type="submit">Generate SMART Rock</button>
+    </form>
 
-    <div class="mode-toggle-wrapper">
-      <label class="switch">
-        <input type="checkbox" id="modeToggle" checked onchange="toggleMode()" />
-        <span class="slider"></span>
+    <h2>Your SMART Rock</h2>
+    <div id="outputBox" class="output-box"></div>
+
+    <button id="startOverBtn">Start Over</button>
+
+    <div class="toggle-group">
+      <label>
+        <input type="checkbox" id="modeToggle" />
+        <span>Classic | Guided</span>
       </label>
-      <span id="mode-label">Classic | Guided</span>
     </div>
   </div>
 
   <script>
-    async function submitGuided() {
-      const prompt = `
-        **Specific:** ${document.getElementById("specific").value}
-        **Measurable:** ${document.getElementById("measurable").value}
-        **Achievable:** ${document.getElementById("achievable").value}
-        **Relevant:** ${document.getElementById("relevant").value}
-        **Time-bound:** ${document.getElementById("timebound").value}
-      `;
+    document.addEventListener("DOMContentLoaded", () => {
+      const form = document.getElementById("guidedForm");
+      const outputBox = document.getElementById("outputBox");
+      const aiToggle = document.getElementById("aiModeToggle");
+      const milestoneToggle = document.getElementById("includeMilestones");
+      const modeToggle = document.getElementById("modeToggle");
 
-      const responseBox = document.getElementById("response-box");
-      responseBox.innerHTML = "Thinking...";
+      // Enable/disable milestones checkbox based on enhanced AI toggle
+      const toggleMilestoneCheckbox = () => {
+        milestoneToggle.disabled = !aiToggle.checked;
+        if (!aiToggle.checked) milestoneToggle.checked = false;
+      };
 
-      try {
-        const res = await axios.post("/.netlify/functions/coach_smart_rocks", {
-          prompt: prompt
-        });
+      aiToggle.addEventListener("change", toggleMilestoneCheckbox);
+      toggleMilestoneCheckbox();
 
-        const formatted = res.data.message
-          .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
-          .replace(/\n/g, "<br>");
+      form.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        outputBox.innerHTML = "Thinking...";
 
-        responseBox.innerHTML = formatted;
-      } catch (error) {
-        responseBox.innerHTML = "Error generating SMART Rock.";
-        console.error(error);
-      }
-    }
+        const prompt = `
+1. Specific: ${document.getElementById("specific").value}
+2. Measurable: ${document.getElementById("measurable").value}
+3. Achievable: ${document.getElementById("achievable").value}
+4. Relevant: ${document.getElementById("relevant").value}
+5. Time-bound: ${document.getElementById("timebound").value}
+        `.trim();
 
-    function startOver() {
-      document.getElementById("specific").value = "";
-      document.getElementById("measurable").value = "";
-      document.getElementById("achievable").value = "";
-      document.getElementById("relevant").value = "";
-      document.getElementById("timebound").value = "";
-      document.getElementById("response-box").innerHTML = "";
-    }
+        try {
+          const response = await fetch("/.netlify/functions/coach_smart_rocks", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              prompt,
+              role: document.getElementById("userRole").value,
+              aiMode: aiToggle.checked ? "enhanced" : "standard",
+              includeMilestones: milestoneToggle.checked
+            })
+          });
 
-    function toggleMode() {
-      const isChecked = document.getElementById("modeToggle").checked;
-      window.location.href = isChecked ? "guided.html" : "index.html";
-    }
+          const data = await response.json();
+          outputBox.innerHTML = data.output;
+        } catch (err) {
+          outputBox.innerHTML = "⚠️ Error generating SMART Rock.";
+        }
+      });
+
+      document.getElementById("startOverBtn").addEventListener("click", () => {
+        form.reset();
+        outputBox.innerHTML = "";
+        toggleMilestoneCheckbox();
+      });
+
+      modeToggle.addEventListener("change", () => {
+        window.location.href = "index.html";
+      });
+    });
   </script>
 </body>
 </html>

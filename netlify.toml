@@ -2,8 +2,12 @@
   functions = "netlify/functions"
   publish = "."
 
-[functions]
-  directory = "netlify/functions"
-
 [[plugins]]
   package = "@netlify/plugin-functions-install-core"
+
+[functions]
+  directory = "netlify/functions"
+  node_bundler = "esbuild"
+
+  [functions."coach_smart_rocks"]
+    timeout = 26
